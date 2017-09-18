@@ -51,3 +51,24 @@ largerRoot a b c
 
 
 --Exercise 6:
+power2 :: Integer -> Integer
+power2 n 
+  | n < 0 = 0
+  | n == 0 = 1
+  | n > 0 = 2*power2(n-1)
+ 
+
+--Exercise 7:
+mult :: Integer -> Integer -> Integer
+mult m n 
+  | n < 0 = -m + mult m (n+1)
+  | n > 0 = m + mult m (n-1)
+  | n == 0 = 0
+
+
+--Exercise 8:
+prod :: Integer -> Integer -> Integer 	
+prod m n
+  | m > n =  error "Invalid numbers!"
+  | m < n = m * prod (m+1) n
+  | m == n = n
