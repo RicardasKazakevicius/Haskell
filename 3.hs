@@ -61,11 +61,36 @@ noOfLines :: String -> Int
 noOfLines str = (length newLines) + 1
   where newLines = [xx | xx <- str, xx == '\n']
 
+
+
 justify :: String -> Int -> String 
-justify s n = s
+justify [] n = []
+justify s n
+  | length(getWord s) > n = error "Word is too long!"
+  | length(getWord s) <= n = getWords s n ++ "\n" ++ justify (getRestStr s (length(getWords s n))) n
+    where 
+      getWords :: String -> Int -> String
+      getWords [] n = []
+      getWords s n 
+        | length(getWord s) > n = []
+        | length(getWord s) == n = getWord s
+        | otherwise = getWord s ++ getWords (getRestStr s (length(getWord s))) (n-length(getWord s))  
+
+      getWord :: String -> String
+      getWord [] = []
+      getWord (x:[]) = [x]
+      getWord (x:xs)
+        | (x == ' ' || x == '\n') && not(head xs == ' ' || head xs == '\n') = []
+        | otherwise = x : getWord xs
+
+      getRestStr :: String -> Int -> String
+      getRestStr [] n = []
+      getRestStr (x:xs) n
+        | n == 0 = xs
+        | otherwise = getRestStr xs (n-1)
+
 
 --overlaps :: Shape -> Shape -> Bool
 --overlaps 
 
 --loan :: Person -> Book -> ([??],[???]) -> ([??],[???])
-
