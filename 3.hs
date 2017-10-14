@@ -62,35 +62,56 @@ noOfLines str = (length newLines) + 1
   where newLines = [xx | xx <- str, xx == '\n']
 
 
+justify :: String -> Int -> String
+justify s n = init(justify' s n) 
 
-justify :: String -> Int -> String 
-justify [] n = []
-justify s n
-  | length(getWord s) > n = error "Word is too long!"
-  | length(getWord s) <= n = getWords s n ++ "\n" ++ justify (getRestStr s (length(getWords s n))) n
+-- 't'and 'f' solves problem then spaces are before first word
+-- 'f' means that there was only spaces before, 't' - that char was found
+justify' :: String -> Int -> String 
+justify' [] _ = []
+justify' s n
+  | n < 1 = "Invalid number"
+  | length(getWord s 'f') > n = error "Word is too long!"
+  | length(getWord s 'f') <= n = getWords s n ++ "\n" ++ justify' (getRestStr s (length(getWords s n))) n
     where 
       getWords :: String -> Int -> String
       getWords [] n = []
+      getWords _ 0 = []
       getWords s n 
-        | length(getWord s) > n = []
-        | length(getWord s) == n = getWord s
-        | otherwise = getWord s ++ getWords (getRestStr s (length(getWord s))) (n-length(getWord s))  
+        | length(getWord s 'f') > n = []
+        | length(getWord s 'f') == n = getWord s 'f'
+        | otherwise = getWord s 'f' ++ getWords (getRestStr s (length(getWord s 'f'))) (n-length(getWord s 'f'))  
 
-      getWord :: String -> String
-      getWord [] = []
-      getWord (x:[]) = [x]
-      getWord (x:xs)
-        | (x == ' ' || x == '\n') && not(head xs == ' ' || head xs == '\n') = []
-        | otherwise = x : getWord xs
+      getWord :: String -> Char -> String
+      getWord [] _ = []
+      getWord (x:xs) c
+        | (c == 'f') && (x == ' ' || x == '\n') && not(head xs == ' ' || head xs == '\n') = x : getWord xs 'f'
+        | (x == ' ' || x == '\n') && not(head xs == ' ' || head xs == '\n') = [x]
+        | otherwise = x : getWord xs 't'
 
       getRestStr :: String -> Int -> String
       getRestStr [] n = []
       getRestStr (x:xs) n
-        | n == 0 = xs
+        | n == 0 = x:xs
         | otherwise = getRestStr xs (n-1)
 
 
---overlaps :: Shape -> Shape -> Bool
---overlaps 
+-- overlaps (Circle 2 (2,2)) (Circle 2 (1,2))
+-- overlaps (Rectangle 2 2 (1,1)) (Rectangle 2 2 (1,1))
+-- overlaps (Circle 2 (2,2)) (Rectangle 2 2 (1,1))
+-- overlaps (Rectangle 2 2 (1,1)) (Circle 2 (2,2))
+data Shape = Circle Float (Int,Int) | Rectangle Float Float (Int,Int) 
+  deriving (Show, Ord, Eq)
+
+overlaps :: Shape -> Shape -> Bool
+overlaps (Circle c1 (x1,y1)) (Circle c2 (x2,y2)) = area (Circle c1 (x1,y1)) == area (Circle c2 (x2,y2))
+overlaps (Rectangle h1 w1 (x1,y1)) (Rectangle h2 w2 (x2,y2)) = area (Rectangle h1 w1 (x1,y1)) == area (Rectangle h2 w2 (x2,y2))
+overlaps (Circle c (x1,y1)) (Rectangle h w (x2,y2)) = True
+overlaps (Rectangle h w (x1,y1)) (Circle c (x2,y2)) = True
+
+area :: Shape -> Float
+area (Circle r (x,y)) = pi*r*r
+area (Rectangle h w (x,y)) = h*w
+
 
 --loan :: Person -> Book -> ([??],[???]) -> ([??],[???])
