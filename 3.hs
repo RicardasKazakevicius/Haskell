@@ -2,7 +2,45 @@ import Data.Char
 
 -- Exercise 1
 subst :: String -> String -> String -> String
-subst a b c = a
+subst [] _ st = st
+subst _ [] st = st
+subst _ _ [] = []
+subst oldSub newSub st
+  | fst (checkSub oldSub st 0) == True = frontStr ++ (subst oldSub newSub restStr)
+  | otherwise = st
+    where 
+      changedStr = addAt(removeAt st position (length oldSub)) newSub position
+      frontStr = take (position + (length oldSub)) changedStr
+      restStr = drop (position + (length oldSub)) changedStr
+      position = snd (checkSub oldSub st 0)
+
+removeAt :: String -> Int -> Int -> String
+removeAt [] _ _ = []
+removeAt (x:xs) pos len
+  | pos /= 0 = [x] ++ removeAt xs (pos-1) len
+  | pos == 0 && len /= 0 = removeAt xs pos (len-1)
+  | len == 0 = [x] ++ removeAt xs (pos-1) len
+
+addAt :: String -> String -> Int -> String
+addAt [] _ _ = []
+addAt str strToAdd pos
+  | pos /= 0 = [head str] ++ (addAt (tail str) strToAdd (pos-1))
+  | pos == 0 = strToAdd ++ (addAt str strToAdd (pos-1)) 
+
+checkSub :: String -> String -> Int -> (Bool,Int)
+checkSub _ [] n = (False,n)
+checkSub [] _ n = (True,n)
+checkSub oldSub st n 
+  | checkStr oldSub st == True = (True,n)
+  | otherwise = checkSub oldSub (tail st) (n+1)
+
+checkStr :: String -> String -> Bool
+checkStr [] _ = True
+checkStr _ [] = False
+checkStr (x:xs) (y:ys) 
+  | x == y = checkStr xs ys
+  | otherwise = False
+
 
 -- Exercise 2
 isPalin :: String -> Bool
@@ -121,5 +159,21 @@ coord (Rectangle w h (x,y)) = ((fromIntegral x), (fromIntegral x)+w, (fromIntegr
 coord (Circle r (x,y)) = ((fromIntegral x)-r, (fromIntegral x)+r, (fromIntegral y)-r, (fromIntegral y)+r)
 
 
+--Define all the necessary types (for persons, books, the book and loan 
+-- statuses, etc.) using data or type commands.
+data Person = FirstName String
+  deriving (Show, Ord, Eq)
+data Book = Name String | Id Int | Status
+  deriving (Show, Ord, Eq)
+data Status = Loaned String | Free String | Locked String
+  deriving (Show, Ord, Eq)
+
+bookDataBase :: [Book]
+bookDataBase = [Name "Book1", Id 123, Name "Book2", Id 5]
 -- Exercise 6
 --loan :: Person -> Book -> ([??],[???]) -> ([??],[???])
+loan :: Person -> Book -> Bool
+loan p b = True
+
+
+  
