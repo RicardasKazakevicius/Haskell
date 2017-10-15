@@ -22,10 +22,10 @@ removeAt (x:xs) pos len
   | len == 0 = [x] ++ removeAt xs (pos-1) len
 
 addAt :: String -> String -> Int -> String
-addAt [] _ _ = []
+addAt [] [] _ = []
 addAt str strToAdd pos
-  | pos /= 0 = [head str] ++ (addAt (tail str) strToAdd (pos-1))
-  | pos == 0 = strToAdd ++ (addAt str strToAdd (pos-1)) 
+  | pos /= 0 || strToAdd == [] = [head str] ++ (addAt (tail str) strToAdd (pos-1))
+  | pos == 0 = [head strToAdd] ++ (addAt str (tail strToAdd) (pos)) 
 
 checkSub :: String -> String -> Int -> (Bool,Int)
 checkSub _ [] n = (False,n)
